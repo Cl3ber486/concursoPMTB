@@ -54,7 +54,7 @@ export const Header = ({ hideThemeToggle = false }) => {
           <MessageSquare size={24} />
         </a>
       </div>
-      <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
         <div className="premium-logo-wrapper">
           <img src="/logo.png" alt="Prefeitura da Cidade de Terra Boa" style={{ height: '100px' }} />
         </div>

@@ -52,7 +52,7 @@ export const AdminLogin = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>
-      <Card style={{ padding: '3rem 2rem', width: '100%', maxWidth: '400px' }}>
+      <Card style={{ padding: '3rem 2rem', width: '100%', maxWidth: '480px' }}>
         <Header hideThemeToggle={true} />
         
         <div className="text-center" style={{ margin: '2rem 0' }}>
