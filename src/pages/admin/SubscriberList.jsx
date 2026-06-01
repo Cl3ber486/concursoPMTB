@@ -1,11 +1,28 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { User, Users, Printer, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '../../components/Button';
-import { subscribersData as subscribers } from '../../data/subscribers';
+import { supabase } from '../../config/supabase';
 
 export const SubscriberList = () => {
 
   const [sortConfig, setSortConfig] = useState({ key: 'dataHora', direction: 'desc' });
+  const [subscribers, setSubscribers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchSubscribers = async () => {
+      try {
+        const { data, error } = await supabase.from('subscribers').select('*');
+        if (error) throw error;
+        setSubscribers(data || []);
+      } catch (err) {
+        console.error('Erro ao buscar inscritos:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSubscribers();
+  }, []);
 
   const sortedSubscribers = useMemo(() => {
     let sortableItems = [...subscribers];
@@ -32,7 +49,7 @@ export const SubscriberList = () => {
       });
     }
     return sortableItems;
-  }, [sortConfig]);
+  }, [sortConfig, subscribers]);
 
   const requestSort = (key) => {
     let direction = 'asc';
@@ -90,6 +107,10 @@ export const SubscriberList = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  if (isLoading) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#a0aec0' }}>Carregando lista de inscritos...</div>;
+  }
 
   return (
     <div className="print-container" style={{ backgroundColor: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)' }}>

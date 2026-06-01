@@ -5,6 +5,7 @@ import { LayoutDashboard, Users, FileText, User, LogOut, Settings } from 'lucide
 export const AdminLayout = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole') || 'Administrador');
+  const [userName, setUserName] = useState(localStorage.getItem('adminLoggedName') || 'Usuário');
 
   useEffect(() => {
     // Force light mode in Admin
@@ -15,6 +16,7 @@ export const AdminLayout = () => {
     document.title = `Administração - ${contestType} ${contestNumber}`;
     const handleRoleChanged = () => {
       setUserRole(localStorage.getItem('userRole') || 'Administrador');
+      setUserName(localStorage.getItem('adminLoggedName') || 'Usuário');
     };
     const handleCustomizationChanged = () => {
       const type = localStorage.getItem('contestType') || 'Concurso Público';
@@ -40,7 +42,7 @@ export const AdminLayout = () => {
   ];
 
   const visibleNavItems = navItems.filter(item => {
-    if (item.label === 'Configurações' && userRole === 'Usuário') return false;
+    if ((item.label === 'Configurações' || item.label === 'Usuários') && userRole === 'Usuário') return false;
     return true;
   });
 
@@ -65,7 +67,9 @@ export const AdminLayout = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid var(--border-color)', padding: '0.5rem 1rem', borderRadius: '2rem' }}>
             <div style={{ textAlign: 'right', fontSize: '0.875rem' }}>
               <span style={{ color: 'var(--text-gray)', display: 'block', fontSize: '0.75rem' }}>Bem-vindo</span>
-              <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>Cleber</span>
+              <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>
+                {userName.split(' ')[0]}
+              </span>
             </div>
             <div style={{ position: 'relative' }}>
               <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--bg-main)', color: 'var(--primary-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -4,15 +4,30 @@ import {
   PieChart, Pie, Cell 
 } from 'recharts';
 import { FileText, Bell } from 'lucide-react';
-import { subscribersData } from '../../data/subscribers';
+import { supabase } from '../../config/supabase';
 
 export const Dashboard = () => {
   const [periodStart, setPeriodStart] = useState('');
   const [periodEnd, setPeriodEnd] = useState('');
+  const [subscribersData, setSubscribersData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setPeriodStart(localStorage.getItem('periodStartDate') || '');
     setPeriodEnd(localStorage.getItem('periodEndDate') || '');
+
+    const fetchSubscribers = async () => {
+      try {
+        const { data, error } = await supabase.from('subscribers').select('*');
+        if (error) throw error;
+        setSubscribersData(data || []);
+      } catch (err) {
+        console.error('Erro ao buscar inscritos no Dashboard:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSubscribers();
   }, []);
   const { 
     cargoData, cityData, pcdData, totalInscricoes, localCount
@@ -52,7 +67,7 @@ export const Dashboard = () => {
     ].filter(i => i.value > 0);
 
     return { cargoData, cityData, pcdData, totalInscricoes, localCount };
-  }, []);
+  }, [subscribersData]);
 
   // Dados simulados para o gráfico de Área (Evolução) baseados no período
   const areaData = useMemo(() => {
@@ -141,6 +156,10 @@ export const Dashboard = () => {
       </div>
     </div>
   );
+
+  if (isLoading) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#a0aec0' }}>Carregando dados do painel...</div>;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', backgroundColor: '#f0f2f5' }}>

@@ -4,6 +4,7 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { CheckCircle, User, MapPin, AlertCircle } from 'lucide-react';
 import { RegistrationIdBanner } from '../../components/RegistrationIdBanner';
+import { supabase } from '../../config/supabase';
 
 export const ReviewStep = () => {
   const navigate = useNavigate();
@@ -48,6 +49,65 @@ export const ReviewStep = () => {
   useEffect(() => {
     setRegistrationId(sessionStorage.getItem('registrationId') || '-----');
   }, []);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleConfirm = async () => {
+    setIsSubmitting(true);
+    try {
+      let idade = null;
+      if (pd_dataNasc && pd_dataNasc !== 'Não informado') {
+        const parts = pd_dataNasc.split('/');
+        if (parts.length === 3) {
+          const birthDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          const today = new Date();
+          idade = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            idade--;
+          }
+        }
+      }
+
+      const { error } = await supabase
+        .from('subscribers')
+        .insert([
+          {
+            inscricao: registrationId,
+            name: pd_nome,
+            cargo: pd_cargo,
+            cpf: pd_cpf,
+            rg: sessionStorage.getItem('pd_rg') || 'Não informado',
+            nascimento: pd_dataNasc,
+            contato: ad_telefone,
+            email: ad_email,
+            idade: idade,
+            local: ad_cidade,
+            cep: ad_cep,
+            endereco: ad_endereco,
+            numero: ad_numero,
+            bairro: ad_bairro,
+            uf: sessionStorage.getItem('ad_uf') || 'PR',
+            afro: sessionStorage.getItem('sc_afro') === 'sim',
+            lact: sessionStorage.getItem('sc_lactante') === 'sim',
+            pcd: sc_pcd,
+            necessidade: sc_necessidade
+          }
+        ]);
+
+      if (error) {
+        console.error('Supabase error details:', error);
+        throw error;
+      }
+      
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error saving to Supabase:', error);
+      alert('Erro ao confirmar inscrição. Tente novamente mais tarde.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Card>
@@ -176,12 +236,12 @@ export const ReviewStep = () => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-        <Button variant="secondary" onClick={() => navigate(-1)}>
+        <Button variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>
           &lt; Voltar
         </Button>
-        <Button variant="success" onClick={() => setShowModal(true)} style={{ gap: '0.5rem' }}>
+        <Button variant="success" onClick={handleConfirm} disabled={isSubmitting} style={{ gap: '0.5rem' }}>
           <CheckCircle size={18} color="#fff" />
-          Confirmar Inscrição
+          {isSubmitting ? 'Confirmando...' : 'Confirmar Inscrição'}
         </Button>
       </div>
 
