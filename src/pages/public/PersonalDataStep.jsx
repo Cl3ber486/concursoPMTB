@@ -5,9 +5,11 @@ import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
 import { RegistrationIdBanner } from '../../components/RegistrationIdBanner';
+import { supabase } from '../../config/supabase';
 
 export const PersonalDataStep = () => {
   const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(false);
   const [cpf, setCpf] = useState(() => sessionStorage.getItem('pd_cpf') || '');
   const [rg, setRg] = useState(() => sessionStorage.getItem('pd_rg') || '');
   const [nome, setNome] = useState(() => sessionStorage.getItem('pd_nome') || '');
@@ -89,7 +91,7 @@ export const PersonalDataStep = () => {
     return true;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setFormError('');
     
     if (!cargo) { setFormError('Por favor, preencha todos os campos obrigatórios (*).'); document.getElementById('cargo')?.focus(); return; }
@@ -103,8 +105,30 @@ export const PersonalDataStep = () => {
       document.getElementById('cpf')?.focus();
       return;
     }
-    
-    navigate('/inscricao/endereco');
+
+    setIsChecking(true);
+    try {
+      const { data, error } = await supabase
+        .from('subscribers')
+        .select('cpf')
+        .eq('cpf', cpf)
+        .limit(1);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setCpfError('Este CPF já está cadastrado no sistema.');
+        document.getElementById('cpf')?.focus();
+        return;
+      }
+      
+      navigate('/inscricao/endereco');
+    } catch (err) {
+      console.error(err);
+      setFormError('Erro ao verificar CPF no banco de dados. Tente novamente.');
+    } finally {
+      setIsChecking(false);
+    }
   };
 
   return (
@@ -164,8 +188,8 @@ export const PersonalDataStep = () => {
       )}
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-        <Button onClick={handleNext}>
-          Continuar &gt;
+        <Button onClick={handleNext} disabled={isChecking}>
+          {isChecking ? 'Verificando...' : 'Continuar >'}
         </Button>
       </div>
     </Card>

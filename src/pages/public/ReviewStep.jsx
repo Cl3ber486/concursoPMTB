@@ -137,23 +137,23 @@ export const ReviewStep = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Cargo Pretendido</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{pd_cargo}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Cargo Pretendido</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{pd_cargo}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Nome Completo</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{pd_nome}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Nome Completo</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{pd_nome}</div>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Data de Nascimento</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{pd_dataNasc}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Data de Nascimento</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{pd_dataNasc}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>CPF</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{pd_cpf}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>CPF</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{pd_cpf}</div>
           </div>
         </div>
       </div>
@@ -168,38 +168,38 @@ export const ReviewStep = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem', marginBottom: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>CEP</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_cep}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>CEP</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_cep}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Endereço</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_endereco}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Endereço</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_endereco}</div>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '1rem', marginBottom: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Número</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_numero}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Número</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_numero}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Bairro</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_bairro}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Bairro</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_bairro}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Cidade</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_cidade}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Cidade</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_cidade}</div>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Telefone</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_telefone}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Telefone</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_telefone}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>E-mail</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{ad_email}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>E-mail</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{ad_email}</div>
           </div>
         </div>
       </div>
@@ -214,23 +214,23 @@ export const ReviewStep = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Afrodescendente?</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{sc_afro}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Afrodescendente?</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{sc_afro}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Lactante?</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{sc_lactante}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Lactante?</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{sc_lactante}</div>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Pessoa com Deficiência (PcD)</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{sc_pcd}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Pessoa com Deficiência (PcD)</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{sc_pcd}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Necessita de condição especial para a prova?</div>
-            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-dark)' }}>{sc_necessidade}</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginBottom: '0.25rem' }}>Necessita de condição especial para a prova?</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', color: 'var(--text-dark)' }}>{sc_necessidade}</div>
           </div>
         </div>
       </div>
