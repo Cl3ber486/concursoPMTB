@@ -156,7 +156,7 @@ export const UserManagement = () => {
       <div className="table-responsive" style={{ backgroundColor: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border-color)', textAlign: 'left', fontSize: '0.75rem', color: 'var(--text-dark)' }}>
+            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border-color)', textAlign: 'left', fontSize: '0.875rem', color: 'var(--text-dark)' }}>
               <th style={{ padding: '0.5rem 1rem', fontWeight: 'normal' }}>Usuário</th>
               <th style={{ padding: '0.5rem 1rem', fontWeight: 'normal' }}>Email</th>
               <th style={{ padding: '0.5rem 1rem', fontWeight: 'normal' }}>Tipo</th>
@@ -165,7 +165,7 @@ export const UserManagement = () => {
           </thead>
           <tbody>
             {users.map(user => (
-              <tr key={user.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem', color: 'var(--text-dark)' }}>
+              <tr key={user.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.875rem', color: 'var(--text-dark)' }}>
                 <td style={{ padding: '0.5rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ width: '36px', height: '36px', backgroundColor: '#e0e7ff', color: 'var(--primary-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>

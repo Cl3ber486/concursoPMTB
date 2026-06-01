@@ -1,6 +1,7 @@
 import React, { useRef, useState, useMemo } from 'react';
-import { User, Users, Printer, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { User, Users, Printer, Download, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronUp, MapPin, Phone, Search } from 'lucide-react';
 import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
 import { supabase } from '../../config/supabase';
 
 export const SubscriberList = () => {
@@ -8,6 +9,16 @@ export const SubscriberList = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'dataHora', direction: 'desc' });
   const [subscribers, setSubscribers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const toggleRow = (id) => {
+    if (expandedRow === id) {
+      setExpandedRow(null);
+    } else {
+      setExpandedRow(id);
+    }
+  };
 
   React.useEffect(() => {
     const fetchSubscribers = async () => {
@@ -50,6 +61,13 @@ export const SubscriberList = () => {
     }
     return sortableItems;
   }, [sortConfig, subscribers]);
+
+  const filteredSubscribers = useMemo(() => {
+    return sortedSubscribers.filter(sub => {
+      const term = searchTerm.toLowerCase();
+      return sub.name.toLowerCase().includes(term) || sub.inscricao.toLowerCase().includes(term);
+    });
+  }, [sortedSubscribers, searchTerm]);
 
   const requestSort = (key) => {
     let direction = 'asc';
@@ -125,20 +143,28 @@ export const SubscriberList = () => {
         </div>
       </div>
 
-      <div className="no-print" style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h2 style={{ fontSize: '0.875rem', fontWeight: '800', color: '#2d3748', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Users size={16} color="var(--primary-color)" /> Lista dos {subscribers.length} inscritos
-          </h2>
-          <p style={{ fontSize: '0.75rem', color: '#a0aec0', marginTop: '0.25rem', marginBottom: '0', fontWeight: '500' }}>{subscribers.length} registros encontrados</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><div style={{width:'10px', height:'10px', borderRadius:'50%', backgroundColor:'#10b981'}}></div> Afrodescendente</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><div style={{width:'10px', height:'10px', borderRadius:'50%', backgroundColor:'#3b82f6'}}></div> Lactante</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><div style={{width:'10px', height:'10px', borderRadius:'50%', backgroundColor:'#aa3bff'}}></div> PCD</span>
+      <div className="no-print" style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        
+        {/* Linha Superior: Título e Ações */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2 style={{ fontSize: '0.875rem', fontWeight: '800', color: '#2d3748', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Users size={16} color="var(--primary-color)" /> Lista dos {filteredSubscribers.length} inscritos
+            </h2>
+            <p style={{ fontSize: '0.75rem', color: '#a0aec0', marginTop: '0.25rem', marginBottom: '0', fontWeight: '500' }}>{filteredSubscribers.length} registros encontrados</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Search size={18} color="var(--text-gray)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+              <input 
+                className="input-field"
+                placeholder="Buscar por código ou nome..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ paddingLeft: '2.5rem', width: '280px', margin: 0 }}
+              />
+            </div>
             <Button onClick={handleExportCSV} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#10b981' }}>
               <Download size={18} /> Exportar CSV
             </Button>
@@ -147,103 +173,155 @@ export const SubscriberList = () => {
             </Button>
           </div>
         </div>
+
+        {/* Linha Inferior: Legendas */}
+        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: 'var(--text-gray)', fontWeight: '500', alignItems: 'center' }}>
+          <span style={{ color: '#a0aec0', marginRight: '-0.5rem' }}>Legenda:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{width:'10px', height:'10px', borderRadius:'50%', backgroundColor:'#10b981'}}></div> Afrodescendente
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{width:'10px', height:'10px', borderRadius:'50%', backgroundColor:'#3b82f6'}}></div> Lactante
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{width:'10px', height:'10px', borderRadius:'50%', backgroundColor:'#aa3bff'}}></div> PCD
+          </div>
+        </div>
       </div>
 
-      <div className="table-responsive">
+      <div className="table-responsive" style={{ padding: '0 1.5rem 1.5rem 1.5rem' }}>
+        
+        {/* Header Visual */}
+        <div className="no-print" style={{ display: 'grid', gridTemplateColumns: '100px 3fr 2fr 2fr 2fr 50px', gap: '1rem', padding: '1rem', color: 'var(--text-gray)', fontSize: '0.875rem', fontWeight: '500', borderBottom: '1px solid var(--border-color)', marginBottom: '1rem' }}>
+          <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => requestSort('inscricao')}>
+            Código {getSortIcon('inscricao')}
+          </div>
+          <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => requestSort('name')}>
+            Nome/Cargo {getSortIcon('name')}
+          </div>
+          <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => requestSort('contato')}>
+            Contato {getSortIcon('contato')}
+          </div>
+          <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => requestSort('local')}>
+            Localização {getSortIcon('local')}
+          </div>
+          <div>Condições Especiais</div>
+          <div></div>
+        </div>
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1200px' }}>
-            <thead style={{ backgroundColor: '#f8fafc', color: 'var(--text-gray)' }}>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left', fontSize: '0.75rem', color: 'var(--text-dark)' }}>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500', width: '120px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }} onClick={() => requestSort('inscricao')}>
-                      Inscrição {getSortIcon('inscricao')}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }} onClick={() => requestSort('dataHora')}>
-                      Data {getSortIcon('dataHora')}
-                    </div>
+        {/* Linhas (Cards) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {filteredSubscribers.map((sub) => (
+            <div key={sub.id} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', backgroundColor: 'white', transition: 'box-shadow 0.2s', boxShadow: expandedRow === sub.id ? 'var(--shadow-md)' : 'var(--shadow-sm)' }}>
+              
+              {/* Linha Resumo (Sempre Visível) */}
+              <div 
+                onClick={() => toggleRow(sub.id)}
+                style={{ display: 'grid', gridTemplateColumns: '100px 3fr 2fr 2fr 2fr 50px', gap: '1rem', padding: '1rem', alignItems: 'center', cursor: 'pointer', backgroundColor: expandedRow === sub.id ? '#f8fafc' : 'transparent' }}
+              >
+                {/* Código */}
+                <div style={{ fontWeight: '600', color: 'var(--text-dark)', fontSize: '0.875rem' }}>
+                  {sub.inscricao}
+                </div>
+
+                {/* Nome/Cargo */}
+                <div>
+                  <div style={{ fontWeight: '600', color: 'var(--text-dark)', fontSize: '0.875rem' }}>{sub.name}</div>
+                  <div style={{ color: 'var(--text-gray)', fontSize: '0.75rem', marginTop: '0.125rem' }}>{sub.cargo}</div>
+                </div>
+
+                {/* Contato */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-dark)', fontSize: '0.875rem' }}>
+                  <Phone size={14} color="var(--text-gray)" />
+                  {sub.contato}
+                </div>
+
+                {/* Localização */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--text-dark)', fontSize: '0.875rem' }}>
+                    <MapPin size={14} color="var(--text-gray)" />
+                    {sub.local}
                   </div>
-                </th>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }} onClick={() => requestSort('name')}>
-                      Nome {getSortIcon('name')}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }} onClick={() => requestSort('cargo')}>
-                      Cargo {getSortIcon('cargo')}
-                    </div>
+                  <div style={{ color: 'var(--text-gray)', fontSize: '0.75rem', marginTop: '0.125rem', marginLeft: '1.25rem' }}>
+                    CEP: {sub.cep}
                   </div>
-                </th>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500', cursor: 'pointer' }} onClick={() => requestSort('cpf')}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Documentos {getSortIcon('cpf')}</div>
-                </th>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }} onClick={() => requestSort('nascimento')}>
-                      Nascimento {getSortIcon('nascimento')}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }} onClick={() => requestSort('idade')}>
-                      Idade {getSortIcon('idade')}
-                    </div>
-                  </div>
-                </th>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500', cursor: 'pointer' }} onClick={() => requestSort('email')}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Contato {getSortIcon('email')}</div>
-                </th>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500', cursor: 'pointer' }} onClick={() => requestSort('local')}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>Endereço Completo {getSortIcon('local')}</div>
-                </th>
-                <th style={{ padding: '0.5rem 1rem', fontWeight: '500' }}>Condições Especiais</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedSubscribers.map((sub) => (
-                <tr key={sub.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem', color: 'var(--text-dark)' }}>
-                  <td style={{ padding: '0.5rem 1rem' }}>
-                    <div style={{ fontWeight: 600 }}>{sub.inscricao}</div>
-                    <div style={{ color: 'var(--text-gray)', fontSize: '0.7rem', marginTop: '0.25rem' }}>
-                      {new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(sub.dataHora))}
-                    </div>
-                  </td>
-                  <td style={{ padding: '0.5rem 1rem' }}>
-                    <div>
-                      <div style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{sub.name}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>{sub.cargo}</div>
-                    </div>
-                  </td>
-                  <td style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>
-                    <div>CPF: {sub.cpf}</div>
-                    <div>RG: {sub.rg}</div>
-                  </td>
-                  <td style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>
-                    <div>{sub.nascimento}</div>
-                    <div>{sub.idade} anos</div>
-                  </td>
-                  <td style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>
-                    <div>{sub.contato}</div>
-                    <div>{sub.email}</div>
-                  </td>
-                  <td style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>
-                    <div>{sub.endereco}, {sub.numero || 'S/N'} - {sub.bairro}</div>
-                    <div>{sub.local} - {sub.uf} | CEP: {sub.cep}</div>
-                  </td>
-                  <td style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      {sub.afro ? <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><div style={{width:'8px', height:'8px', borderRadius:'50%', backgroundColor:'#10b981', flexShrink: 0}}></div> Afrodescendente</span> : null}
-                      {sub.lact ? <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><div style={{width:'8px', height:'8px', borderRadius:'50%', backgroundColor:'#3b82f6', flexShrink: 0}}></div> Lactante</span> : null}
-                      {sub.pcd ? <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><div style={{width:'8px', height:'8px', borderRadius:'50%', backgroundColor:'#aa3bff', flexShrink: 0}}></div> PCD</span> : null}
-                      {!sub.afro && !sub.lact && !sub.pcd && <span>Nenhuma Especial</span>}
+                </div>
+
+                {/* Condições Especiais */}
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '1rem', backgroundColor: sub.afro ? '#dcfce7' : '#f1f5f9', color: sub.afro ? '#166534' : '#64748b', fontWeight: '500' }}>
+                    {sub.afro ? 'Afro' : 'Não'}
+                  </span>
+                  <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '1rem', backgroundColor: sub.lact ? '#dbeafe' : '#f1f5f9', color: sub.lact ? '#1e40af' : '#64748b', fontWeight: '500' }}>
+                    {sub.lact ? 'Lact.' : 'Não'}
+                  </span>
+                  <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '1rem', backgroundColor: sub.pcd ? '#f3e8ff' : '#f1f5f9', color: sub.pcd ? '#6b21a8' : '#64748b', fontWeight: '500' }}>
+                    {sub.pcd ? 'PCD' : 'Não'}
+                  </span>
+                </div>
+
+                {/* Expandir */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', color: 'var(--text-gray)' }}>
+                  {expandedRow === sub.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </div>
+              </div>
+
+              {/* Área Expandida (Detalhes) */}
+              {expandedRow === sub.id && (
+                <div style={{ borderTop: '1px solid var(--border-color)', padding: '1.5rem', backgroundColor: 'white', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+                  
+                  {/* Dados Pessoais */}
+                  <div>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-dark)', marginBottom: '1rem' }}>
+                      <User size={16} /> Dados Pessoais
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-gray)' }}>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>Inscrição:</strong> {sub.inscricao} ({new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(sub.dataHora))})</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>CPF:</strong> {sub.cpf}</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>RG:</strong> {sub.rg}</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>Nascimento:</strong> {sub.nascimento}</div>
                       {sub.necessidade && sub.necessidade !== 'Nenhuma' && (
-                        <div style={{ marginTop: '0.25rem', fontSize: '0.7rem', color: 'var(--text-gray)', whiteSpace: 'normal', maxWidth: '200px' }}>
-                          <strong>Necessidade:</strong> {sub.necessidade}
-                        </div>
+                        <div style={{ marginTop: '0.5rem' }}><strong style={{ color: 'var(--text-dark)' }}>Necessidade Especial:</strong> {sub.necessidade}</div>
                       )}
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+
+                  {/* Contato */}
+                  <div>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-dark)', marginBottom: '1rem' }}>
+                      <Phone size={16} /> Contato
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-gray)' }}>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>Telefone:</strong> {sub.contato}</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>E-mail:</strong> {sub.email}</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>Endereço:</strong> {sub.endereco}, {sub.numero || 'S/N'}</div>
+                    </div>
+                  </div>
+
+                  {/* Localização */}
+                  <div>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-dark)', marginBottom: '1rem' }}>
+                      <MapPin size={16} /> Localização
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-gray)' }}>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>CEP:</strong> {sub.cep}</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>Bairro:</strong> {sub.bairro}</div>
+                      <div><strong style={{ color: 'var(--text-dark)' }}>Cidade:</strong> {sub.local} - {sub.uf}</div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+            </div>
+          ))}
+          {filteredSubscribers.length === 0 && (
+             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-gray)', fontSize: '0.875rem' }}>
+               Nenhum inscrito encontrado.
+             </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
