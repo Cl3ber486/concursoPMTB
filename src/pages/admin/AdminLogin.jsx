@@ -36,6 +36,7 @@ export const AdminLogin = () => {
         localStorage.setItem('userRole', user.role);
         localStorage.setItem('adminLoggedEmail', user.email);
         localStorage.setItem('adminLoggedName', user.name);
+        localStorage.setItem('adminLoggedAvatar', user.avatar || '');
         window.dispatchEvent(new Event('userRoleChanged'));
         navigate('/admin/dashboard');
       } else {

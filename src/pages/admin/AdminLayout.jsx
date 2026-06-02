@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, User, LogOut, Settings, ChevronDown, Plus, Check, X, Lock } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, User, LogOut, Settings, ChevronDown, Plus, Check, X, Lock, Clock } from 'lucide-react';
 import { supabase } from '../../config/supabase';
 
 export const AdminLayout = () => {
@@ -13,6 +13,7 @@ export const AdminLayout = () => {
   // Profile state
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem('adminLoggedAvatar') || '');
   const [newAvatar, setNewAvatar] = useState(localStorage.getItem('adminLoggedAvatar') || '');
@@ -29,8 +30,37 @@ export const AdminLayout = () => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setNewAvatar(reader.result);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 250;
+        const MAX_HEIGHT = 250;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress as JPEG with 70% quality
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        setNewAvatar(dataUrl);
+      };
+      img.src = event.target.result;
     };
     reader.readAsDataURL(file);
   };
@@ -108,6 +138,7 @@ export const AdminLayout = () => {
       if (newPassword) updates.password = newPassword;
       if (newName !== localStorage.getItem('adminLoggedName')) updates.name = newName;
       if (newEmail !== localStorage.getItem('adminLoggedEmail')) updates.email = newEmail;
+      if (newAvatar !== localStorage.getItem('adminLoggedAvatar')) updates.avatar = newAvatar;
       
       if (Object.keys(updates).length > 0) {
         const { error } = await supabase
@@ -163,22 +194,24 @@ export const AdminLayout = () => {
           <div ref={profileMenuRef} style={{ position: 'relative' }}>
             <div 
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', transition: 'all 0.2s', padding: '0.25rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', transition: 'all 0.2s', padding: '0.4rem 0.75rem 0.4rem 1rem', border: '1.5px solid #e2e8f0', borderRadius: '50px', backgroundColor: 'white', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#cbd5e1'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
             >
               <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column' }}>
-                <span style={{ color: '#0f172a', fontWeight: '600', fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: '500' }}>Bem-vindo,</span>
+                <span style={{ color: '#0f172a', fontWeight: '700', fontSize: '0.9rem', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
                   {userName}
-                </span>
-                <span style={{ color: '#0ea5e9', fontSize: '0.8rem', fontWeight: '500' }}>
-                  {userRole}
                 </span>
               </div>
               <div style={{ position: 'relative' }}>
-                <div style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2.5px solid #3DBDA7', boxShadow: '0 0 0 2px white, 0 2px 5px rgba(0,0,0,0.08)' }}>
+                <div style={{ width: '38px', height: '38px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid white', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
                   {avatarUrl ? <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={20} />}
                 </div>
+                {/* Online dot */}
+                <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '10px', height: '10px', backgroundColor: '#22c55e', borderRadius: '50%', border: '2px solid white' }} />
               </div>
-              <ChevronDown size={16} color="#64748b" style={{ marginLeft: '0.25rem' }} />
+              <ChevronDown size={14} color="#94a3b8" />
             </div>
 
             {/* Profile Dropdown */}
@@ -200,7 +233,7 @@ export const AdminLayout = () => {
                   <Settings size={18} color="#475569" /> Mudar o Perfil
                 </button>
                 <button 
-                  onClick={() => navigate('/admin')}
+                  onClick={() => setShowLogoutConfirm(true)}
                   style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#e53e3e', fontSize: '0.9rem', fontWeight: '500', textAlign: 'left', borderRadius: '8px', transition: 'background 0.2s', marginTop: '0.25rem' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -238,7 +271,7 @@ export const AdminLayout = () => {
 
           {/* Date & Time */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.8rem', backgroundColor: '#f8fafc', padding: '0.35rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.9rem' }}>🕐</span>
+            <Clock size={16} color="#64748b" />
             <span style={{ fontWeight: '600', color: '#334155' }}>{currentDateTime.toLocaleDateString('pt-BR')}</span>
             <span style={{ color: '#94a3b8' }}>•</span>
             <span style={{ fontWeight: '500' }}>{currentDateTime.toLocaleTimeString('pt-BR')}</span>
@@ -257,7 +290,7 @@ export const AdminLayout = () => {
           onClick={(e) => { if (e.target === e.currentTarget) setShowProfileModal(false); }}
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, backdropFilter: 'blur(3px)' }}
         >
-          <div style={{ backgroundColor: 'white', borderRadius: '20px', width: '100%', maxWidth: '860px', display: 'flex', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.2)', position: 'relative' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '20px', width: '100%', maxWidth: '860px', maxHeight: '90vh', display: 'flex', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.2)', position: 'relative' }}>
 
             {/* Fechar */}
             <button
@@ -346,7 +379,7 @@ export const AdminLayout = () => {
             </div>
 
             {/* ── RIGHT PANE ── */}
-            <div style={{ flex: 1, padding: '2.5rem 3rem 2rem', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: 1, padding: '2.5rem 3rem 2rem', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
 
               {/* Alert message */}
               {profileMessage.text && (
@@ -459,9 +492,9 @@ export const AdminLayout = () => {
                     <button
                       onClick={handleSaveProfile}
                       disabled={isSavingProfile}
-                      style={{ padding: '0.7rem 2.25rem', borderRadius: '8px', border: 'none', backgroundColor: '#3DBDA7', color: 'white', cursor: isSavingProfile ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.9rem', opacity: isSavingProfile ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(61,189,167,0.4)', transition: 'all 0.2s' }}
-                      onMouseEnter={(e) => { if (!isSavingProfile) e.currentTarget.style.backgroundColor = '#2aa898'; }}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3DBDA7'}
+                      style={{ padding: '0.7rem 2.25rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color, #1e3a8a)', color: 'white', cursor: isSavingProfile ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.9rem', opacity: isSavingProfile ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s' }}
+                      onMouseEnter={(e) => { if (!isSavingProfile) e.currentTarget.style.opacity = '0.9'; }}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                     >
                       {isSavingProfile ? 'Salvando...' : 'Salvar Perfil'}
                     </button>
@@ -473,6 +506,47 @@ export const AdminLayout = () => {
           </div>
         </div>
       )}
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, backdropFilter: 'blur(3px)' }}
+        >
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '2.5rem', width: '100%', maxWidth: '400px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', textAlign: 'center' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <LogOut size={32} color="#ef4444" />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '0.75rem' }}>Sair do Sistema</h3>
+            <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '2rem', lineHeight: '1.5' }}>
+              Tem certeza que deseja sair da sua conta?
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                style={{ flex: 1, padding: '0.7rem', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: 'white', color: '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('userRole');
+                  localStorage.removeItem('adminLoggedEmail');
+                  localStorage.removeItem('adminLoggedName');
+                  localStorage.removeItem('adminLoggedAvatar');
+                  navigate('/admin');
+                }}
+                style={{ flex: 1, padding: '0.7rem', borderRadius: '8px', border: 'none', backgroundColor: '#ef4444', color: 'white', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}
+              >
+                Sim, Sair
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
