@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { Trash2, Briefcase, Settings as SettingsIcon, ShieldCheck, Edit2, Check, X, Database, Download, Upload, AlertTriangle } from 'lucide-react';
+import { Trash2, Briefcase, Settings as SettingsIcon, ShieldCheck, Edit2, Check, X, Database, Download, Upload, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../../config/supabase';
 
 export const Settings = () => {
@@ -20,6 +20,7 @@ export const Settings = () => {
   
   const [editingCargo, setEditingCargo] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [isCargosOpen, setIsCargosOpen] = useState(false);
 
   // DB Management
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -260,27 +261,27 @@ export const Settings = () => {
           </p>
           
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div style={{ flex: '1 1 300px' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: 'var(--text-dark)', marginBottom: '0.5rem' }}>Tipo (ex: Concurso Público, Processo Seletivo PSS)</label>
+            <div style={{ flex: '0 1 380px' }}>
               <Input 
+                label="Tipo (ex: Concurso Público, Processo Seletivo PSS)"
                 value={contestType} 
                 onChange={(e) => setContestType(e.target.value)}
                 placeholder="Ex: Concurso Público"
-                style={{ marginBottom: 0 }}
               />
             </div>
             <div style={{ flex: '1 1 200px' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: 'var(--text-dark)', marginBottom: '0.5rem' }}>Número/Ano (ex: 02/2026)</label>
               <Input 
+                label="Número/Ano (ex: 02/2026)"
                 value={contestNumber} 
                 onChange={(e) => setContestNumber(e.target.value)}
                 placeholder="Ex: 02/2026"
-                style={{ marginBottom: 0 }}
               />
             </div>
-            <Button onClick={saveCustomization} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              {isSavingCustom ? <><Check size={18} /> Salvo!</> : 'Salvar Alterações'}
-            </Button>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <Button onClick={saveCustomization} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', height: '42px' }}>
+                {isSavingCustom ? <><Check size={18} /> Salvo!</> : 'Salvar Alterações'}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -329,8 +330,11 @@ export const Settings = () => {
         </div>
 
         {/* Jobs Management */}
-        <div style={{ backgroundColor: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '1.5rem', border: '1px solid var(--border-color)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ backgroundColor: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+          <div 
+            onClick={() => setIsCargosOpen(!isCargosOpen)}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem', cursor: 'pointer', backgroundColor: isCargosOpen ? '#f8fafc' : 'transparent', borderBottom: isCargosOpen ? '1px solid var(--border-color)' : 'none', transition: 'background-color 0.2s' }}
+          >
             <div>
               <h3 style={{ fontSize: '0.875rem', fontWeight: '800', color: '#2d3748', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Briefcase size={16} color="var(--primary-color)" /> Cargos Disponíveis
@@ -339,16 +343,23 @@ export const Settings = () => {
                 Adicione ou remova os cargos que aparecerão na tela de Dados Pessoais do candidato.
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-              <Button onClick={() => {
-                const tempId = 'temp_' + Date.now();
-                const newEmptyCargo = { value: tempId, label: '' };
-                setCargos([newEmptyCargo, ...cargos]);
-                setEditingCargo(tempId);
-                setEditValue('');
-              }} style={{ whiteSpace: 'nowrap' }}>+ Novo Cargo</Button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-gray)' }}>
+              {isCargosOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
           </div>
+
+          {isCargosOpen && (
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                <Button onClick={(e) => {
+                  e.stopPropagation();
+                  const tempId = 'temp_' + Date.now();
+                  const newEmptyCargo = { value: tempId, label: '' };
+                  setCargos([newEmptyCargo, ...cargos]);
+                  setEditingCargo(tempId);
+                  setEditValue('');
+                }} style={{ whiteSpace: 'nowrap' }}>+ Novo Cargo</Button>
+              </div>
 
           <div className="table-responsive">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -432,6 +443,8 @@ export const Settings = () => {
             </tbody>
             </table>
           </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -39,7 +39,8 @@ export const Dashboard = () => {
     const cityMap = {};
     let ampla = 0;
     let pcd = 0;
-    let afroLact = 0;
+    let afro = 0;
+    let lact = 0;
     let localCount = 0;
 
     subscribersData.forEach(s => {
@@ -49,9 +50,14 @@ export const Dashboard = () => {
       cityMap[s.local] = (cityMap[s.local] || 0) + 1;
       
       // Alocação (Perfil)
-      if (s.pcd) pcd++;
-      else if (s.afro || s.lact) afroLact++;
-      else ampla++;
+      let hasSpecial = false;
+      if (s.pcd) { pcd++; hasSpecial = true; }
+      if (s.afro) { afro++; hasSpecial = true; }
+      if (s.lact) { lact++; hasSpecial = true; }
+      
+      if (!hasSpecial) {
+        ampla++;
+      }
 
       // Regional (Terra Boa)
       if (s.local && s.local.toLowerCase() === 'terra boa') localCount++;
@@ -61,10 +67,11 @@ export const Dashboard = () => {
     const cityData = Object.keys(cityMap).map(c => ({ name: c, count: cityMap[c] })).sort((a,b) => b.count - a.count).slice(0, 4);
 
     const pcdData = [
-      { name: 'Ampla Concorrência', value: ampla, color: '#4db6ac' },
-      { name: 'Condições Especiais', value: afroLact, color: '#81c784' },
-      { name: 'PCD', value: pcd, color: '#4dd0e1' }
-    ].filter(i => i.value > 0);
+      { name: 'Ampla Concorrência', value: ampla, color: '#e2e8f0' },
+      { name: 'Afrodesc.', value: afro, color: '#10b981' },
+      { name: 'Lactante', value: lact, color: '#3b82f6' },
+      { name: 'PCD', value: pcd, color: '#aa3bff' }
+    ];
 
     return { cargoData, cityData, pcdData, totalInscricoes, localCount };
   }, [subscribersData]);
@@ -241,8 +248,8 @@ export const Dashboard = () => {
               </ResponsiveContainer>
             </div>
             <div style={{ width: '50%', paddingLeft: '1rem' }}>
-              {pcdData.map(item => {
-                const pct = ((item.value / totalInscricoes) * 100).toFixed(0);
+              {pcdData.filter(i => i.name !== 'Ampla Concorrência').map(item => {
+                const pct = totalInscricoes > 0 ? ((item.value / totalInscricoes) * 100).toFixed(0) : 0;
                 return (
                   <div key={item.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', fontSize: '0.75rem', color: '#2d3748', fontWeight: '700' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
