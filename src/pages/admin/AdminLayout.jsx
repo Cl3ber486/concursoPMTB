@@ -7,7 +7,11 @@ export const AdminLayout = () => {
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole') || 'Administrador');
   const [userName, setUserName] = useState(localStorage.getItem('adminLoggedName') || 'Usuário');
 
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
   useEffect(() => {
+    const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
+    
     // Force light mode in Admin
     document.body.classList.remove('dark');
     
@@ -26,6 +30,7 @@ export const AdminLayout = () => {
     window.addEventListener('userRoleChanged', handleRoleChanged);
     window.addEventListener('customizationChanged', handleCustomizationChanged);
     return () => {
+      clearInterval(timer);
       const type = localStorage.getItem('contestType') || 'Concurso Público';
       const number = localStorage.getItem('contestNumber') || '01/2026';
       document.title = `Inscrição - ${type} ${number}`;
@@ -37,6 +42,7 @@ export const AdminLayout = () => {
   const navItems = [
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Visão Geral' },
     { path: '/admin/inscritos', icon: Users, label: 'Inscritos' },
+    { path: '/admin/relatorios', icon: FileText, label: 'Relatórios' },
     { path: '/admin/usuarios', icon: User, label: 'Usuários' },
     { path: '/admin/configuracoes', icon: Settings, label: 'Configurações' }
   ];
@@ -63,23 +69,33 @@ export const AdminLayout = () => {
             <h1 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', fontWeight: 'bold' }}>Dashboard de Inscrições</h1>
           </div>
 
-          {/* User Info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid var(--border-color)', padding: '0.5rem 1rem', borderRadius: '2rem' }}>
-            <div style={{ textAlign: 'right', fontSize: '0.875rem' }}>
-              <span style={{ color: 'var(--text-gray)', display: 'block', fontSize: '0.75rem' }}>Bem-vindo</span>
-              <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>
-                {userName.split(' ')[0]}
-              </span>
+          {/* User Info & System Time */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            
+            {/* System Time */}
+            <div style={{ textAlign: 'right', color: 'var(--text-gray)', fontSize: '0.875rem', display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontWeight: '600', color: 'var(--text-dark)' }}>{currentDateTime.toLocaleDateString('pt-BR')}</span>
+              <span>{currentDateTime.toLocaleTimeString('pt-BR')}</span>
             </div>
-            <div style={{ position: 'relative' }}>
-              <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--bg-main)', color: 'var(--primary-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <User size={16} />
+
+            {/* User Badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid var(--border-color)', padding: '0.5rem 1rem', borderRadius: '2rem' }}>
+              <div style={{ textAlign: 'right', fontSize: '0.875rem' }}>
+                <span style={{ color: 'var(--text-gray)', display: 'block', fontSize: '0.75rem' }}>Bem-vindo</span>
+                <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>
+                  {userName.split(' ')[0]}
+                </span>
               </div>
-              <div style={{ position: 'absolute', bottom: 0, right: 0, width: '10px', height: '10px', backgroundColor: 'var(--success-color)', borderRadius: '50%', border: '2px solid white' }}></div>
+              <div style={{ position: 'relative' }}>
+                <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--bg-main)', color: 'var(--primary-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <User size={16} />
+                </div>
+                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '10px', height: '10px', backgroundColor: 'var(--success-color)', borderRadius: '50%', border: '2px solid white' }}></div>
+              </div>
+              <button onClick={() => navigate('/admin')} style={{ background: 'none', border: 'none', color: 'var(--text-gray)', marginLeft: '0.5rem', cursor: 'pointer' }}>
+                <LogOut size={18} />
+              </button>
             </div>
-            <button onClick={() => navigate('/admin')} style={{ background: 'none', border: 'none', color: 'var(--text-gray)', marginLeft: '0.5rem', cursor: 'pointer' }}>
-              <LogOut size={18} />
-            </button>
           </div>
         </div>
       </header>

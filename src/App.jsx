@@ -10,6 +10,7 @@ import { AdminLogin } from './pages/admin/AdminLogin'
 import { AdminLayout } from './pages/admin/AdminLayout'
 import { Dashboard } from './pages/admin/Dashboard'
 import { SubscriberList } from './pages/admin/SubscriberList'
+import { Reports } from './pages/admin/Reports'
 import { UserManagement } from './pages/admin/UserManagement'
 import { Settings } from './pages/admin/Settings'
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="inscritos" element={<SubscriberList />} />
+          <Route path="relatorios" element={<Reports />} />
           <Route path="usuarios" element={<UserManagement />} />
           <Route path="configuracoes" element={<Settings />} />
         </Route>

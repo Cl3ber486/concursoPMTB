@@ -30,7 +30,7 @@ export const Dashboard = () => {
     fetchSubscribers();
   }, []);
   const { 
-    cargoData, cityData, pcdData, totalInscricoes, localCount
+    cargoData, cityData, pcdData, totalInscricoes, localCount, afroCount, lactCount
   } = useMemo(() => {
     const totalInscricoes = subscribersData.length;
     const metaInscricoes = 500; // Meta simulada
@@ -64,19 +64,34 @@ export const Dashboard = () => {
     });
 
     const cargoData = Object.keys(cargoMap).map(c => ({ name: c, count: cargoMap[c] })).sort((a,b) => b.count - a.count).slice(0, 4);
-    const cityData = Object.keys(cityMap).map(c => ({ name: c, count: cityMap[c] })).sort((a,b) => b.count - a.count).slice(0, 4);
+    const cityData = Object.keys(cityMap).map(c => ({ name: c, count: cityMap[c] })).sort((a,b) => b.count - a.count);
 
-    const pcdData = [
-      { name: 'Ampla Concorrência', value: ampla, color: '#e2e8f0' },
-      { name: 'Afrodesc.', value: afro, color: '#10b981' },
-      { name: 'Lactante', value: lact, color: '#3b82f6' },
-      { name: 'PCD', value: pcd, color: '#aa3bff' }
-    ];
+    const pcdTypesCount = {
+      'Nenhuma': 0,
+      'Deficiência auditiva': 0,
+      'Deficiência visual': 0,
+      'Deficiência física': 0
+    };
+    
+    subscribersData.forEach(s => {
+      if (s.pcd && pcdTypesCount[s.pcd] !== undefined) {
+        pcdTypesCount[s.pcd]++;
+      } else if (s.pcd) {
+        // Fallback for any other custom PCD if it exists
+        pcdTypesCount[s.pcd] = (pcdTypesCount[s.pcd] || 0) + 1;
+      }
+    });
 
-    return { cargoData, cityData, pcdData, totalInscricoes, localCount };
+    const pcdColors = ['#e2e8f0', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#aa3bff'];
+    const pcdData = Object.keys(pcdTypesCount).map((type, index) => ({
+      name: type,
+      value: pcdTypesCount[type],
+      color: pcdColors[index % pcdColors.length]
+    }));
+
+    return { cargoData, cityData, pcdData, totalInscricoes, localCount, afroCount: afro, lactCount: lact };
   }, [subscribersData]);
 
-  // Dados simulados para o gráfico de Área (Evolução) baseados no período
   const areaData = useMemo(() => {
     if (periodStart && periodEnd) {
       const start = new Date(periodStart);
@@ -85,38 +100,47 @@ export const Dashboard = () => {
       start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
       end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
 
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+
       const diffTime = Math.abs(end.getTime() - start.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      if (diffDays >= 0 && diffDays <= 60) {
+      if (diffDays >= 0 && diffDays <= 90) {
         const data = [];
-        let currentCount = 0;
-        for (let i = 0; i <= diffDays; i++) {
+        let cumulative = 0;
+
+        // Agrupar inscritos reais por data
+        const countsByDate = {};
+        subscribersData.forEach(sub => {
+          // Usa dataHora (do Supabase)
+          const dataStr = sub.dataHora || sub.created_at;
+          const d = dataStr ? new Date(dataStr) : new Date();
+          const dateKey = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(d);
+          countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
+        });
+
+        // Determinar o limite final do loop (hoje ou o fim do período, o que for menor)
+        const diffTimeToToday = today.getTime() - start.getTime();
+        const diffDaysToToday = Math.max(0, Math.ceil(diffTimeToToday / (1000 * 60 * 60 * 24)));
+        const finalLoopDays = Math.min(diffDays, diffDaysToToday);
+
+        for (let i = 0; i <= finalLoopDays; i++) {
           const d = new Date(start);
           d.setDate(d.getDate() + i);
           const name = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(d);
           
-          if (i === diffDays) {
-            currentCount = totalInscricoes;
-          } else if (i > 0) {
-            currentCount += Math.random() > 0.6 ? 1 : 0;
-            if (currentCount > totalInscricoes) currentCount = totalInscricoes;
-          }
-          data.push({ name, current: currentCount, previous: Math.max(0, currentCount - 1) });
+          data.push({ 
+            name, 
+            Inscritos: countsByDate[name] || 0
+          });
         }
         return data;
       }
     }
     
-    return [
-      { name: 'Dia 1', current: 0, previous: 0 },
-      { name: 'Dia 2', current: 1, previous: 0 },
-      { name: 'Dia 3', current: 2, previous: 1 },
-      { name: 'Dia 4', current: 3, previous: 2 },
-      { name: 'Dia 5', current: 5, previous: 3 },
-      { name: 'Dia 6', current: 5, previous: 5 }
-    ];
-  }, [periodStart, periodEnd, totalInscricoes]);
+    return [];
+  }, [periodStart, periodEnd, subscribersData]);
 
   // Dados para o Medidor (Candidatos Locais)
   const gaugeValue = localCount;
@@ -177,9 +201,15 @@ export const Dashboard = () => {
         {/* Gráfico de Área: Evolução */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={titleStyle}>EVOLUÇÃO DE INSCRIÇÕES</div>
-              <div style={subTitleStyle}>Histórico de inscritos atuais vs. estimativa</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              <div>
+                <div style={titleStyle}>EVOLUÇÃO DE INSCRIÇÕES</div>
+                <div style={subTitleStyle}>Inscritos por dia</div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#e6fffa', padding: '0.4rem 1rem', borderRadius: '0.5rem', border: '1px solid #b2f5ea', marginTop: '-1.5rem' }}>
+                <span style={{ fontSize: '0.65rem', color: '#047481', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Geral</span>
+                <span style={{ fontSize: '1.4rem', color: '#00897b', fontWeight: '900', lineHeight: '1', marginTop: '0.1rem' }}>{totalInscricoes}</span>
+              </div>
             </div>
             <select style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', color: '#4a5568', border: '1px solid #e2e8f0', borderRadius: '0.5rem', outline: 'none', fontWeight: '600', backgroundColor: 'white' }}>
               <option>Período Oficial</option>
@@ -193,17 +223,12 @@ export const Dashboard = () => {
                     <stop offset="5%" stopColor="#4db6ac" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#4db6ac" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="colorPrev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4dd0e1" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#4dd0e1" stopOpacity={0}/>
-                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#a0aec0', fontWeight: 600 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#a0aec0', fontWeight: 600 }} />
                 <Tooltip />
-                <Area type="monotone" dataKey="previous" stroke="#4dd0e1" fillOpacity={1} fill="url(#colorPrev)" strokeWidth={2} />
-                <Area type="monotone" dataKey="current" stroke="#4db6ac" fillOpacity={1} fill="url(#colorCurrent)" strokeWidth={2} />
+                <Area type="monotone" dataKey="Inscritos" stroke="#4db6ac" fillOpacity={1} fill="url(#colorCurrent)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -227,14 +252,14 @@ export const Dashboard = () => {
         <div style={cardStyle}>
           <div style={titleStyle}>DISTRIBUIÇÃO POR CIDADE</div>
           <div style={subTitleStyle}>Volume de inscritos por localidade</div>
-          <div style={{ marginTop: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ marginTop: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', maxHeight: '180px', paddingRight: '0.5rem', gap: '0.5rem' }}>
             {cityData.map((c) => renderProgressBar(c.name, c.count, Math.max(...cityData.map(x=>x.count)), '#4dd0e1'))}
           </div>
         </div>
 
         {/* Gráfico de Rosca: Perfil */}
         <div style={cardStyle}>
-          <div style={titleStyle}>PERFIL DOS INSCRITOS</div>
+          <div style={titleStyle}>PESSOAS COM DEFICIÊNCIA (PCD)</div>
           <div style={subTitleStyle}>Distribuição por modalidades de vaga</div>
           <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
             <div style={{ width: '50%', height: '180px' }}>
@@ -248,8 +273,9 @@ export const Dashboard = () => {
               </ResponsiveContainer>
             </div>
             <div style={{ width: '50%', paddingLeft: '1rem' }}>
-              {pcdData.filter(i => i.name !== 'Ampla Concorrência').map(item => {
-                const pct = totalInscricoes > 0 ? ((item.value / totalInscricoes) * 100).toFixed(0) : 0;
+              {pcdData.map(item => {
+                const totalPcds = pcdData.reduce((acc, curr) => acc + curr.value, 0);
+                const pct = totalPcds > 0 ? ((item.value / totalPcds) * 100).toFixed(0) : 0;
                 return (
                   <div key={item.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', fontSize: '0.75rem', color: '#2d3748', fontWeight: '700' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -292,13 +318,21 @@ export const Dashboard = () => {
             </div>
           </div>
 
-          <div style={{ marginTop: 'auto', paddingTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <button style={{ width: '100%', padding: '0.6rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#4a5568', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}>
-              <FileText size={14} /> Exportar Relatório PDF
-            </button>
-            <button style={{ width: '100%', padding: '0.6rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#4a5568', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}>
-              <Bell size={14} /> Central de Alertas
-            </button>
+          <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ width: '100%', padding: '0.6rem 1rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#4a5568', fontSize: '0.875rem', fontWeight: '600' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#10b981' }}></div>
+                Afrodescendentes
+              </div>
+              <span style={{ color: '#2d3748', fontWeight: '800' }}>{afroCount}</span>
+            </div>
+            <div style={{ width: '100%', padding: '0.6rem 1rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#4a5568', fontSize: '0.875rem', fontWeight: '600' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6' }}></div>
+                Lactantes
+              </div>
+              <span style={{ color: '#2d3748', fontWeight: '800' }}>{lactCount}</span>
+            </div>
           </div>
         </div>
 

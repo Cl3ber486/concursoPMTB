@@ -86,32 +86,32 @@ export const SubscriberList = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Inscrição', 'Nome', 'Cargo', 'CPF', 'RG', 'Nascimento', 'Idade', 'Contato', 'Email', 'Local', 'UF', 'CEP', 'Endereço', 'Número', 'Bairro', 'Condições Especiais', 'Necessidade'];
+    const headers = [
+      'Inscrição', 'Data/Hora', 'Nome', 'Cargo', 'CPF', 'RG', 'Nascimento', 
+      'Contato', 'Email', 'CEP', 'Endereço', 'Número', 'Bairro', 'Cidade', 'UF', 
+      'Afrodescendente', 'Lactante', 'PCD (Tipo)', 'Condição Especial de Prova'
+    ];
     
     const rows = subscribers.map(sub => {
-      const condicoes = [];
-      if (sub.afro) condicoes.push('Afrodescendente');
-      if (sub.lact) condicoes.push('Lactante');
-      if (sub.pcd) condicoes.push('PCD');
-      if (condicoes.length === 0) condicoes.push('Nenhuma');
-      
       return [
         sub.inscricao,
+        `"${new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(sub.dataHora))}"`,
         `"${sub.name}"`,
         `"${sub.cargo}"`,
         sub.cpf,
         sub.rg,
         sub.nascimento,
-        sub.idade,
         `"${sub.contato}"`,
         sub.email,
-        `"${sub.local}"`,
-        sub.uf,
         sub.cep,
         `"${sub.endereco}"`,
         `"${sub.numero || ''}"`,
         `"${sub.bairro}"`,
-        `"${condicoes.join(', ')}"`,
+        `"${sub.local}"`,
+        sub.uf,
+        sub.afro ? 'Sim' : 'Não',
+        sub.lact ? 'Sim' : 'Não',
+        `"${sub.pcd && sub.pcd !== 'Nenhuma' ? sub.pcd : 'Nenhuma'}"`,
         `"${sub.necessidade || 'Nenhuma'}"`
       ].join(';');
     });
@@ -167,9 +167,6 @@ export const SubscriberList = () => {
             </div>
             <Button onClick={handleExportCSV} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#10b981' }}>
               <Download size={18} /> Exportar CSV
-            </Button>
-            <Button onClick={handlePrint} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Printer size={18} /> Imprimir Relatório
             </Button>
           </div>
         </div>
@@ -255,8 +252,8 @@ export const SubscriberList = () => {
                   <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '1rem', backgroundColor: sub.lact ? '#dbeafe' : '#f1f5f9', color: sub.lact ? '#1e40af' : '#64748b', fontWeight: '500' }}>
                     {sub.lact ? 'Lact.' : 'Não'}
                   </span>
-                  <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '1rem', backgroundColor: sub.pcd ? '#f3e8ff' : '#f1f5f9', color: sub.pcd ? '#6b21a8' : '#64748b', fontWeight: '500' }}>
-                    {sub.pcd ? 'PCD' : 'Não'}
+                  <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '1rem', backgroundColor: (sub.pcd && sub.pcd !== 'Nenhuma') ? '#f3e8ff' : '#f1f5f9', color: (sub.pcd && sub.pcd !== 'Nenhuma') ? '#6b21a8' : '#64748b', fontWeight: '500' }}>
+                    {(sub.pcd && sub.pcd !== 'Nenhuma') ? 'PCD' : 'Não'}
                   </span>
                 </div>
 
@@ -280,9 +277,11 @@ export const SubscriberList = () => {
                       <div><strong style={{ color: 'var(--text-dark)' }}>CPF:</strong> {sub.cpf}</div>
                       <div><strong style={{ color: 'var(--text-dark)' }}>RG:</strong> {sub.rg}</div>
                       <div><strong style={{ color: 'var(--text-dark)' }}>Nascimento:</strong> {sub.nascimento}</div>
-                      {sub.necessidade && sub.necessidade !== 'Nenhuma' && (
-                        <div style={{ marginTop: '0.5rem' }}><strong style={{ color: 'var(--text-dark)' }}>Necessidade Especial:</strong> {sub.necessidade}</div>
-                      )}
+                      
+                      <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px dashed #e2e8f0' }}>
+                        <div><strong style={{ color: 'var(--text-dark)' }}>PCD:</strong> {sub.pcd || 'Nenhuma'}</div>
+                        <div style={{ marginTop: '0.25rem' }}><strong style={{ color: 'var(--text-dark)' }}>Condição Especial de Prova:</strong> {sub.necessidade || 'Nenhuma'}</div>
+                      </div>
                     </div>
                   </div>
 
