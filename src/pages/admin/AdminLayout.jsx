@@ -174,7 +174,7 @@ export const AdminLayout = () => {
                 </span>
               </div>
               <div style={{ position: 'relative' }}>
-                <div style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid white', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
+                <div style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2.5px solid #3DBDA7', boxShadow: '0 0 0 2px white, 0 2px 5px rgba(0,0,0,0.08)' }}>
                   {avatarUrl ? <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={20} />}
                 </div>
               </div>
@@ -461,7 +461,7 @@ export const AdminLayout = () => {
                       disabled={isSavingProfile}
                       style={{ padding: '0.7rem 2.25rem', borderRadius: '8px', border: 'none', backgroundColor: '#3DBDA7', color: 'white', cursor: isSavingProfile ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.9rem', opacity: isSavingProfile ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(61,189,167,0.4)', transition: 'all 0.2s' }}
                       onMouseEnter={(e) => { if (!isSavingProfile) e.currentTarget.style.backgroundColor = '#2aa898'; }}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3DBDA7'}}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3DBDA7'}
                     >
                       {isSavingProfile ? 'Salvando...' : 'Salvar Perfil'}
                     </button>
