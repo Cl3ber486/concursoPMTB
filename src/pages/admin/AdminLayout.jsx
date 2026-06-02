@@ -158,90 +158,91 @@ export const AdminLayout = () => {
             <h1 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', fontWeight: 'bold' }}>Dashboard de Inscrições</h1>
           </div>
 
-          {/* User Info & System Time */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            
-            {/* System Time */}
-            <div style={{ textAlign: 'right', color: 'var(--text-gray)', fontSize: '0.875rem', display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontWeight: '600', color: 'var(--text-dark)' }}>{currentDateTime.toLocaleDateString('pt-BR')}</span>
-              <span>{currentDateTime.toLocaleTimeString('pt-BR')}</span>
-            </div>
 
-            {/* User Badge & Dropdown */}
-            <div ref={profileMenuRef} style={{ position: 'relative' }}>
-              <div 
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', transition: 'all 0.2s', padding: '0.25rem' }}
-              >
-                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ color: '#0f172a', fontWeight: '600', fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
-                    {userName}
-                  </span>
-                  <span style={{ color: '#0ea5e9', fontSize: '0.8rem', fontWeight: '500' }}>
-                    {userRole}
-                  </span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid white', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
-                    {avatarUrl ? <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={20} />}
-                  </div>
-                </div>
-                <ChevronDown size={16} color="#64748b" style={{ marginLeft: '0.25rem' }} />
+          {/* User Badge & Dropdown */}
+          <div ref={profileMenuRef} style={{ position: 'relative' }}>
+            <div 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', transition: 'all 0.2s', padding: '0.25rem' }}
+            >
+              <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column' }}>
+                <span style={{ color: '#0f172a', fontWeight: '600', fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
+                  {userName}
+                </span>
+                <span style={{ color: '#0ea5e9', fontSize: '0.8rem', fontWeight: '500' }}>
+                  {userRole}
+                </span>
               </div>
-
-              {/* Profile Dropdown */}
-              {showProfileMenu && (
-                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', minWidth: '220px', zIndex: 100, overflow: 'hidden', padding: '0.5rem' }}>
-                  <button 
-                    onClick={() => { 
-                      setShowProfileMenu(false); 
-                      setShowProfileModal(true); 
-                      setIsEditingProfile(false); 
-                      setNewName(localStorage.getItem('adminLoggedName') || '');
-                      setNewEmail(localStorage.getItem('adminLoggedEmail') || '');
-                      setNewAvatar(localStorage.getItem('adminLoggedAvatar') || '');
-                    }}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#334155', fontSize: '0.9rem', fontWeight: '500', textAlign: 'left', borderRadius: '8px', transition: 'background 0.2s' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <Settings size={18} color="#475569" /> Mudar o Perfil
-                  </button>
-                  <button 
-                    onClick={() => navigate('/admin')}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#e53e3e', fontSize: '0.9rem', fontWeight: '500', textAlign: 'left', borderRadius: '8px', transition: 'background 0.2s', marginTop: '0.25rem' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <LogOut size={18} /> Sair do Sistema
-                  </button>
+              <div style={{ position: 'relative' }}>
+                <div style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid white', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
+                  {avatarUrl ? <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={20} />}
                 </div>
-              )}
+              </div>
+              <ChevronDown size={16} color="#64748b" style={{ marginLeft: '0.25rem' }} />
             </div>
+
+            {/* Profile Dropdown */}
+            {showProfileMenu && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', minWidth: '220px', zIndex: 100, overflow: 'hidden', padding: '0.5rem' }}>
+                <button 
+                  onClick={() => { 
+                    setShowProfileMenu(false); 
+                    setShowProfileModal(true); 
+                    setIsEditingProfile(false); 
+                    setNewName(localStorage.getItem('adminLoggedName') || '');
+                    setNewEmail(localStorage.getItem('adminLoggedEmail') || '');
+                    setNewAvatar(localStorage.getItem('adminLoggedAvatar') || '');
+                  }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#334155', fontSize: '0.9rem', fontWeight: '500', textAlign: 'left', borderRadius: '8px', transition: 'background 0.2s' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <Settings size={18} color="#475569" /> Mudar o Perfil
+                </button>
+                <button 
+                  onClick={() => navigate('/admin')}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#e53e3e', fontSize: '0.9rem', fontWeight: '500', textAlign: 'left', borderRadius: '8px', transition: 'background 0.2s', marginTop: '0.25rem' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <LogOut size={18} /> Sair do Sistema
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
       {/* Subnav */}
       <div className="no-print" style={{ backgroundColor: 'white', borderBottom: '1px solid var(--border-color)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '1rem', padding: '0.5rem 2rem' }}>
-          {visibleNavItems.map(item => (
-            <NavLink 
-              key={item.path}
-              to={item.path}
-              style={({ isActive }) => ({
-                display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)',
-                color: isActive ? 'var(--primary-color)' : 'var(--text-gray)',
-                backgroundColor: isActive ? 'var(--bg-main)' : 'transparent',
-                fontWeight: isActive ? '500' : '400',
-                fontSize: '0.875rem',
-                textDecoration: 'none'
-              })}
-            >
-              <item.icon size={16} />
-              {item.label}
-            </NavLink>
-          ))}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 2rem' }}>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            {visibleNavItems.map(item => (
+              <NavLink 
+                key={item.path}
+                to={item.path}
+                style={({ isActive }) => ({
+                  display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)',
+                  color: isActive ? 'var(--primary-color)' : 'var(--text-gray)',
+                  backgroundColor: isActive ? 'var(--bg-main)' : 'transparent',
+                  fontWeight: isActive ? '500' : '400',
+                  fontSize: '0.875rem',
+                  textDecoration: 'none'
+                })}
+              >
+                <item.icon size={16} />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Date & Time */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.8rem', backgroundColor: '#f8fafc', padding: '0.35rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '0.9rem' }}>🕐</span>
+            <span style={{ fontWeight: '600', color: '#334155' }}>{currentDateTime.toLocaleDateString('pt-BR')}</span>
+            <span style={{ color: '#94a3b8' }}>•</span>
+            <span style={{ fontWeight: '500' }}>{currentDateTime.toLocaleTimeString('pt-BR')}</span>
+          </div>
         </div>
       </div>
 
@@ -358,7 +359,7 @@ export const AdminLayout = () => {
               {/* ─ DADOS PESSOAIS ─ */}
               <div style={{ marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem', paddingBottom: '0.6rem', borderBottom: '1px solid #f0f3f6' }}>
-                  <User size={15} color="#38bdf8" />
+                  <User size={15} color="#3DBDA7" />
                   <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Dados Pessoais</span>
                 </div>
                 <div>
@@ -370,7 +371,7 @@ export const AdminLayout = () => {
                     disabled={!isEditingProfile}
                     placeholder={isEditingProfile ? 'Digite seu nome' : ''}
                     style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.97rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                    onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
+                    onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#3DBDA7'; }}
                     onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                   />
                 </div>
@@ -379,7 +380,7 @@ export const AdminLayout = () => {
               {/* ─ ACESSO AO SISTEMA ─ */}
               <div style={{ marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem', paddingBottom: '0.6rem', borderBottom: '1px solid #f0f3f6' }}>
-                  <Lock size={15} color="#38bdf8" />
+                  <Lock size={15} color="#3DBDA7" />
                   <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Acesso ao Sistema</span>
                 </div>
                 <div>
@@ -391,7 +392,7 @@ export const AdminLayout = () => {
                     disabled={!isEditingProfile}
                     placeholder={isEditingProfile ? 'seu@email.com' : ''}
                     style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                    onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
+                    onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#3DBDA7'; }}
                     onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                   />
                 </div>
@@ -416,7 +417,7 @@ export const AdminLayout = () => {
                       disabled={!isEditingProfile}
                       placeholder={isEditingProfile ? 'Digite a nova senha' : ''}
                       style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: `1px solid ${isEditingProfile && confirmPassword && newPassword !== confirmPassword ? '#fca5a5' : '#e2e8f0'}`, outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                      onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
+                      onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#3DBDA7'; }}
                       onBlur={(e) => e.target.style.borderColor = (isEditingProfile && confirmPassword && newPassword !== confirmPassword) ? '#fca5a5' : '#e2e8f0'}
                     />
                   </div>
@@ -429,7 +430,7 @@ export const AdminLayout = () => {
                       disabled={!isEditingProfile}
                       placeholder={isEditingProfile ? 'Repita a nova senha' : ''}
                       style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: `1px solid ${isEditingProfile && confirmPassword && newPassword !== confirmPassword ? '#fca5a5' : isEditingProfile && confirmPassword && newPassword === confirmPassword && newPassword ? '#86efac' : '#e2e8f0'}`, outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                      onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
+                      onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#3DBDA7'; }}
                       onBlur={(e) => e.target.style.borderColor = (isEditingProfile && confirmPassword && newPassword !== confirmPassword) ? '#fca5a5' : (isEditingProfile && confirmPassword && newPassword === confirmPassword && newPassword) ? '#86efac' : '#e2e8f0'}
                     />
                     {isEditingProfile && confirmPassword && newPassword !== confirmPassword && (
@@ -461,9 +462,9 @@ export const AdminLayout = () => {
                     <button
                       onClick={handleSaveProfile}
                       disabled={isSavingProfile}
-                      style={{ padding: '0.7rem 2.25rem', borderRadius: '8px', border: 'none', backgroundColor: '#0ea5e9', color: 'white', cursor: isSavingProfile ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.9rem', opacity: isSavingProfile ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(14,165,233,0.35)', transition: 'all 0.2s' }}
-                      onMouseEnter={(e) => { if (!isSavingProfile) e.currentTarget.style.backgroundColor = '#0284c7'; }}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0ea5e9'}
+                      style={{ padding: '0.7rem 2.25rem', borderRadius: '8px', border: 'none', backgroundColor: '#3DBDA7', color: 'white', cursor: isSavingProfile ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.9rem', opacity: isSavingProfile ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(61,189,167,0.4)', transition: 'all 0.2s' }}
+                      onMouseEnter={(e) => { if (!isSavingProfile) e.currentTarget.style.backgroundColor = '#2aa898'; }}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3DBDA7'}}
                     >
                       {isSavingProfile ? 'Salvando...' : 'Salvar Perfil'}
                     </button>
