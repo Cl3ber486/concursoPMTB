@@ -403,9 +403,6 @@ export const AdminLayout = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem', paddingBottom: '0.6rem', borderBottom: '1px solid #f0f3f6' }}>
                   <Lock size={15} color="#f59e0b" />
                   <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Alterar Senha</span>
-                  {!isEditingProfile && (
-                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontStyle: 'italic', marginLeft: '0.25rem' }}>(opcional)</span>
-                  )}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                   <div>
