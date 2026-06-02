@@ -19,9 +19,11 @@ export const AdminLayout = () => {
   const [newName, setNewName] = useState(localStorage.getItem('adminLoggedName') || '');
   const [newEmail, setNewEmail] = useState(localStorage.getItem('adminLoggedEmail') || '');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState({ type: '', text: '' });
   const fileInputRef = React.useRef(null);
+  const profileMenuRef = React.useRef(null);
 
   const handleAvatarFileChange = (e) => {
     const file = e.target.files[0];
@@ -32,6 +34,18 @@ export const AdminLayout = () => {
     };
     reader.readAsDataURL(file);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    if (showProfileMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileMenu]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
@@ -79,6 +93,13 @@ export const AdminLayout = () => {
   const handleSaveProfile = async () => {
     setIsSavingProfile(true);
     setProfileMessage({ type: '', text: '' });
+
+    // Validate password match
+    if (newPassword && newPassword !== confirmPassword) {
+      setProfileMessage({ type: 'error', text: 'As senhas não coincidem. Verifique e tente novamente.' });
+      setIsSavingProfile(false);
+      return;
+    }
     
     try {
       const email = localStorage.getItem('adminLoggedEmail');
@@ -109,6 +130,7 @@ export const AdminLayout = () => {
         setIsEditingProfile(false);
         setProfileMessage({ type: '', text: '' });
         setNewPassword('');
+        setConfirmPassword('');
       }, 2000);
       
     } catch (err) {
@@ -146,7 +168,7 @@ export const AdminLayout = () => {
             </div>
 
             {/* User Badge & Dropdown */}
-            <div style={{ position: 'relative' }}>
+            <div ref={profileMenuRef} style={{ position: 'relative' }}>
               <div 
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', transition: 'all 0.2s', padding: '0.25rem' }}
@@ -355,37 +377,67 @@ export const AdminLayout = () => {
               </div>
 
               {/* ─ ACESSO AO SISTEMA ─ */}
-              <div style={{ flex: 1 }}>
+              <div style={{ marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem', paddingBottom: '0.6rem', borderBottom: '1px solid #f0f3f6' }}>
                   <Lock size={15} color="#38bdf8" />
                   <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Acesso ao Sistema</span>
                 </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>E-mail</label>
+                  <input
+                    type="email"
+                    value={isEditingProfile ? newEmail : (localStorage.getItem('adminLoggedEmail') || '')}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    disabled={!isEditingProfile}
+                    placeholder={isEditingProfile ? 'seu@email.com' : ''}
+                    style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+                    onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
+                    onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                  />
+                </div>
+              </div>
+
+              {/* ─ ALTERAR SENHA ─ */}
+              <div style={{ marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.2rem', paddingBottom: '0.6rem', borderBottom: '1px solid #f0f3f6' }}>
+                  <Lock size={15} color="#f59e0b" />
+                  <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Alterar Senha</span>
+                  {!isEditingProfile && (
+                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontStyle: 'italic', marginLeft: '0.25rem' }}>(opcional)</span>
+                  )}
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>E-mail</label>
-                    <input
-                      type="email"
-                      value={isEditingProfile ? newEmail : (localStorage.getItem('adminLoggedEmail') || '')}
-                      onChange={(e) => setNewEmail(e.target.value)}
-                      disabled={!isEditingProfile}
-                      placeholder={isEditingProfile ? 'seu@email.com' : ''}
-                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                      onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
-                      onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>Senha</label>
+                    <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>Nova Senha</label>
                     <input
                       type="password"
                       value={isEditingProfile ? newPassword : '••••••••'}
                       onChange={(e) => setNewPassword(e.target.value)}
                       disabled={!isEditingProfile}
-                      placeholder={isEditingProfile ? 'Nova senha (opcional)' : ''}
-                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+                      placeholder={isEditingProfile ? 'Digite a nova senha' : ''}
+                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: `1px solid ${isEditingProfile && confirmPassword && newPassword !== confirmPassword ? '#fca5a5' : '#e2e8f0'}`, outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
                       onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
-                      onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                      onBlur={(e) => e.target.style.borderColor = (isEditingProfile && confirmPassword && newPassword !== confirmPassword) ? '#fca5a5' : '#e2e8f0'}
                     />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>Confirmar Senha</label>
+                    <input
+                      type="password"
+                      value={isEditingProfile ? confirmPassword : '••••••••'}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={!isEditingProfile}
+                      placeholder={isEditingProfile ? 'Repita a nova senha' : ''}
+                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '8px', border: `1px solid ${isEditingProfile && confirmPassword && newPassword !== confirmPassword ? '#fca5a5' : isEditingProfile && confirmPassword && newPassword === confirmPassword && newPassword ? '#86efac' : '#e2e8f0'}`, outline: 'none', fontSize: '0.95rem', color: '#334155', backgroundColor: isEditingProfile ? 'white' : '#f8fafc', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+                      onFocus={(e) => { if (isEditingProfile) e.target.style.borderColor = '#38bdf8'; }}
+                      onBlur={(e) => e.target.style.borderColor = (isEditingProfile && confirmPassword && newPassword !== confirmPassword) ? '#fca5a5' : (isEditingProfile && confirmPassword && newPassword === confirmPassword && newPassword) ? '#86efac' : '#e2e8f0'}
+                    />
+                    {isEditingProfile && confirmPassword && newPassword !== confirmPassword && (
+                      <span style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: '0.3rem', display: 'block' }}>⚠ As senhas não coincidem</span>
+                    )}
+                    {isEditingProfile && confirmPassword && newPassword === confirmPassword && newPassword && (
+                      <span style={{ fontSize: '0.7rem', color: '#22c55e', marginTop: '0.3rem', display: 'block' }}>✓ Senhas coincidem</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -399,7 +451,7 @@ export const AdminLayout = () => {
                 ) : (
                   <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                     <button
-                      onClick={() => { setIsEditingProfile(false); setProfileMessage({ type: '', text: '' }); setNewPassword(''); }}
+                      onClick={() => { setIsEditingProfile(false); setProfileMessage({ type: '', text: '' }); setNewPassword(''); setConfirmPassword(''); }}
                       style={{ padding: '0.7rem 1.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: 'white', color: '#475569', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', transition: 'all 0.2s' }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
